@@ -1,0 +1,71 @@
+Join-ы 
+
+SELECT * FROM executor ex
+    JOIN employees em ON ex.tab_no=em.id
+    JOIN department dp ON em.department_id=dp.id
+    JOIN contract cn ON ex.contract_id=cn.id
+    JOIN customer cs ON cn.customer_id=cs.id
+
+    
+1
+
+SELECT contract_id, em.name FROM executor ex
+    JOIN employees em ON ex.tab_no=em.id
+    JOIN department dp ON em.department_id=dp.id
+    JOIN contract cn ON ex.contract_id=cn.id
+WHERE dp.name='Logistic'
+
+2
+
+SELECT ROUND(AVG(cn.amount),2) FROM executor ex
+    JOIN employees em ON ex.tab_no=em.id AND em.name='Ivan Ivanov'
+    JOIN contract cn ON ex.contract_id=cn.id
+
+3
+
+SELECT COUNT(cs.location), cs.location FROM executor ex
+    JOIN contract cn ON ex.contract_id=cn.id
+    JOIN customer cs ON cn.customer_id=cs.id
+GROUP BY cs.location
+ORDER BY COUNT(cs.location)
+DESC
+
+4
+
+SELECT COUNT(cn.amount), cn.amount FROM executor ex
+    JOIN contract cn ON ex.contract_id=cn.id 
+GROUP BY cn.amount
+having count(cn.amount) >1
+ORDER BY cn.amount
+
+5
+
+SELECT cs.customer_name, ROUND(AVG(cn.amount),2) FROM contract cn
+    JOIN customer cs ON cn.customer_id=cs.id
+GROUP BY cs.customer_name
+HAVING AVG(cn.amount)=
+(SELECT AVG(cn.amount) FROM contract cn
+     RIGHT JOIN customer cs ON cn.customer_id=cs.id
+GROUP BY cs.customer_name
+ ORDER BY AVG(cn.amount)
+ ASC
+ LIMIT 1
+ )
+
+6
+
+SELECT dp.name, SUM(amount) FROM executor ex
+    JOIN employees em ON ex.tab_no=em.id
+    JOIN department dp ON em.department_id=dp.id
+    JOIN contract cn ON ex.contract_id=cn.id
+   GROUP BY dp.name
+   HAVING SUM(amount)=
+     (SELECT SUM(amount) FROM executor ex
+      JOIN employees em ON ex.tab_no=em.id
+      JOIN department dp ON em.department_id=dp.id
+      JOIN contract cn ON ex.contract_id=cn.id
+      GROUP BY dp.name
+      ORDER BY SUM(amount)
+      DESC
+      LIMIT 1
+      )
